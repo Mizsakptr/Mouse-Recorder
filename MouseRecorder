@@ -1,0 +1,167 @@
+#include <iostream>
+#include <windows.h>
+#include <chrono>
+#include <thread>
+#include <fstream>
+#include <string>
+
+using namespace std;
+using namespace std::this_thread;
+using namespace std::chrono;
+
+void LeftClick()
+{
+	INPUT    Input = { 0 };
+
+	Input.type = INPUT_MOUSE;
+	Input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+	::SendInput(1, &Input, sizeof(INPUT));
+
+
+	::ZeroMemory(&Input, sizeof(INPUT));
+	Input.type = INPUT_MOUSE;
+	Input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+	::SendInput(1, &Input, sizeof(INPUT));
+}
+
+void RightClick()
+{
+	INPUT    Input = { 0 };
+
+	Input.type = INPUT_MOUSE;
+	Input.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
+	::SendInput(1, &Input, sizeof(INPUT));
+
+
+	::ZeroMemory(&Input, sizeof(INPUT));
+	Input.type = INPUT_MOUSE;
+	Input.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
+	::SendInput(1, &Input, sizeof(INPUT));
+}
+
+void Loading() {
+	cout << "Feldolgozas" << '\r';
+	sleep_for(milliseconds(500));
+
+	cout << "Feldolgozas." << '\r';
+	sleep_for(milliseconds(500));
+
+	cout << "Feldolgozas.." << '\r';
+	sleep_for(milliseconds(500));
+
+	cout << "Feldolgozas..." << endl;
+
+}
+
+int main() {
+	int a, b;
+	int lmb = 0;
+	int lmbset = 0;
+	int rmb = 0;
+	int rmbset = 0;
+	int vr = 0;
+	int vl = 0;
+
+	CreateDirectory("C:\\Revolver", NULL);
+	POINT p;
+	string s;
+	int i = 0;
+	int j = 0;
+	ofstream filewrite;
+	ifstream fileread;
+	ifstream geta;
+	INPUT ipl;
+	INPUT ipr;
+	ipl.type = INPUT_MOUSE;
+	ipr.type = INPUT_MOUSE;
+
+	system("Pause");
+
+	filewrite.open("C:\\Revolver\\example.txt");
+
+
+
+	while (i < 1) {
+		GetCursorPos(&p);
+
+		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
+			lmb = 1;
+		}
+
+		else (lmb = 0);
+
+		if (GetAsyncKeyState(VK_RBUTTON) & 0x8000) {
+			rmb = 1;
+		}
+
+		else (rmb = 0);
+
+		cout << "x: " << p.x << "y: " << p.y << "\t" << lmb << "\t" << rmb << endl;
+		sleep_for(milliseconds(10));
+
+
+		filewrite << p.x << "\t" << p.y << "\t" << lmb << "\t" << rmb << endl;
+
+
+		if (GetAsyncKeyState(VK_SHIFT) & 0x8000) {
+			i = 2;
+		}
+
+	}
+
+	filewrite.close();
+
+	fileread.open("C:\\Revolver\\example.txt");
+
+	Loading();
+
+	while (j < 1) {
+
+		fileread >> a;
+		fileread >> b;
+		fileread >> lmbset;
+		fileread >> rmbset;
+
+		if (lmbset == 1) { vl++; }
+		if (lmbset == 0) { vl = 0; }
+		if (vl > 1) { lmbset = 0; }
+
+		if (rmbset == 1) { vr++; }
+		if (rmbset == 0) { vr = 0; }
+		if (vr > 1) { rmbset = 0; }
+
+		cout << "x:" << a << "\t" << "y:" << b << "\t" << lmbset << "\t" << rmbset << endl;
+		sleep_for(milliseconds(10));
+		SetCursorPos(a, b);
+
+		if (GetAsyncKeyState('S') & 0x8000)
+		{
+			system("Pause");
+
+		}
+
+		if (lmbset == 1) {
+
+			LeftClick();
+		}
+
+		if (rmbset == 1) {
+
+			RightClick();
+		}
+
+		if (GetKeyState(VK_SHIFT) & 0x8000) {
+			j = 2;
+		}
+
+
+		if (fileread.eof()) {
+			fileread.clear();
+			fileread.seekg(0, ios::beg);
+		}
+	}
+
+	fileread.close();
+
+	return 0;
+}
